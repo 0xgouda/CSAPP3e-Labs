@@ -370,7 +370,7 @@ unsigned floatPower2(int x) {
     return 0x7f800000;
 
   if (x != 0)
-    return 0 | ((x + 127) << 23);
+    return (x + 127) << 23;
 
   return 0x3f800000;
 }
