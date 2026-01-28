@@ -333,7 +333,7 @@ unsigned floatScale2(unsigned uf) {
 int floatFloat2Int(unsigned uf) {
   unsigned exp = (uf << 1) >> 24;
   unsigned frac = (uf << 9) >> 9;
-  int res = (int)exp - 127;
+  int res = exp - 127;
   int sign = uf >> 31 ? -1 : 1;
 
   if (exp == 0xff || (res - 23) > 31)
