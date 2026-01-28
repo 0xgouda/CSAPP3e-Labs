@@ -262,20 +262,23 @@ int logicalNeg(int x) {
  *  Rating: 4
  */
 int howManyBits(int x) {
-  int sign = x >> 31;
+  int b0, b1, b2, b4, b8, b16;
+  int sign;
+
+  sign = x >> 31;
   x = (~sign & x) | (sign & ~x);
 
-  int b16 = !!(x >> 16) << 4;
+  b16 = !!(x >> 16) << 4;
   x = x >> b16;
-  int b8 = !!(x >> 8) << 3;
+  b8 = !!(x >> 8) << 3;
   x = x >> b8;
-  int b4 = !!(x >> 4) << 2;
+  b4 = !!(x >> 4) << 2;
   x = x >> b4;
-  int b2 = !!(x >> 2) << 1;
+  b2 = !!(x >> 2) << 1;
   x = x >> b2;
-  int b1 = !!(x >> 1);
+  b1 = !!(x >> 1);
   x = x >> b1;
-  int b0 = x;
+  b0 = x;
 
   return b16 + b8 + b4 + b2 + b1 + b0 + 1;
 }
@@ -292,7 +295,28 @@ int howManyBits(int x) {
  *   Rating: 4
  */
 unsigned floatScale2(unsigned uf) {
-  return 2;
+  unsigned ufTmp;
+  unsigned exp = (uf << 1) >> 24;
+
+  if (exp == 0xff)
+    return uf;
+
+  if (exp > 0)
+  {
+    exp += 1;
+    if (exp == 0xff)
+      return (uf | 0x7f800000);
+    else {
+      ufTmp = uf << 9;
+      ufTmp = ufTmp >> 9;
+      ufTmp |= (exp << 23);
+      ufTmp |= (uf >> 31) << 31;
+      return ufTmp;
+    }
+  }
+
+  ufTmp = uf << 1;
+  return ufTmp | ((uf >> 31) << 31);
 }
 /* 
  * floatFloat2Int - Return bit-level equivalent of expression (int) f
