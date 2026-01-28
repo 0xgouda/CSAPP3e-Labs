@@ -331,7 +331,23 @@ unsigned floatScale2(unsigned uf) {
  *   Rating: 4
  */
 int floatFloat2Int(unsigned uf) {
-  return 2;
+  unsigned exp = (uf << 1) >> 24;
+  unsigned frac = (uf << 9) >> 9;
+  int res = (int)exp - 127;
+  int sign = uf >> 31 ? -1 : 1;
+
+  if (exp == 0xff || (res - 23) > 31)
+    return 0x80000000u;
+
+  if (exp > 0 && res >= 0)
+  {
+    frac |= (1 << 23);
+    if (res <= 23)
+      return sign * (frac >> (23 - res));
+    return sign * (frac << (res - 23));
+  }
+
+  return 0;
 }
 /* 
  * floatPower2 - Return bit-level equivalent of the expression 2.0^x
